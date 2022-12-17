@@ -1,28 +1,29 @@
 package database
 
 import (
-	"catrot-item/boilerplate/models"
 	"fmt"
-	"sync"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var (
-	db []*models.User
-	mu sync.Mutex
-)
 
-// Connect with database
-func Connect() {
-	db = make([]*models.User, 0)
-	fmt.Println("Connected with Database")
+type Item struct {
+	gorm.Model
+	Title string
+	Category string
+	Price int 
+	Content string
 }
 
-func Insert(user *models.User) {
-	mu.Lock()
-	db = append(db, user)
-	mu.Unlock()
-}
+func Init() {
+	dsn := "test:asdf0102!@tcp(localhost:3306)/mydb?parseTime=true"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-func Get() []*models.User {
-	return db
+	db.AutoMigrate(&Item{})
+
+	if err != nil{
+		panic("DB 연결이 실패했습니다!")
+	}
+
+	fmt.Println("연결이 성공적으로 ")
 }
