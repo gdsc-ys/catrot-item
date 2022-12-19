@@ -1,12 +1,11 @@
 package main
 
 import (
-	"catrot-item/boilerplate/database"
-	"catrot-item/boilerplate/handlers"
+	"src/database"
+	"src/handlers"
 
 	"flag"
 	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -22,7 +21,10 @@ func main() {
 	flag.Parse()
 
 	// Connected with database
-	database.Connect()
+	database.Init()
+
+
+
 
 	// Create fiber app
 	app := fiber.New(fiber.Config{
@@ -33,15 +35,11 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 
-	// Create a /api/v1 endpoint
-	v1 := app.Group("/api/v1")
+	items := app.Group("/items")
+	items.Get("/", handlers.ItemList)
 
-	// Bind handlers
-	v1.Get("/users", handlers.UserList)
-	v1.Post("/users", handlers.UserCreate)
-
-	// Setup static files
-	app.Static("/", "./static/public")
+	// // Setup static files
+	// app.Static("/", "./static/public")
 
 	// Handle not founds
 	app.Use(handlers.NotFound)
