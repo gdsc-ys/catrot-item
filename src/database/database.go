@@ -4,15 +4,9 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"src/models"
 )
 
-type Item struct {
-	gorm.Model
-	Title    string
-	Category string
-	Price    int
-	Content  string
-}
 
 var DB *gorm.DB
 
@@ -21,7 +15,7 @@ func Init() {
 	dsn := "test:asdf0102!@tcp(localhost:3306)/mydb?parseTime=true"
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	DB.AutoMigrate(&Item{})
+	DB.AutoMigrate(&models.Item{})
 
 	if err != nil {
 		panic("DB 연결이 실패했습니다!")
