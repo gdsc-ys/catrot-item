@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"src/database"
 	"src/models"
 
@@ -26,6 +27,16 @@ func ItemDetail(c *fiber.Ctx) error {
 		"success":true,
 		"item": item,
 	})
+}
+
+func ItemCreate(c *fiber.Ctx) error {
+	item := new(models.Item)
+	if err := c.BodyParser(item); err != nil {
+		return err
+	}
+	log.Println(item.Title)
+	log.Println(item.Content)
+	return c.Send(c.Body())
 }
 
 // NotFound returns custom 404 page

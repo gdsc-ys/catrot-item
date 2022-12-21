@@ -39,6 +39,7 @@ func main() {
 	items := app.Group("/items")
 	items.Get("/", handlers.ItemList)
 	items.Get("/:itemId", handlers.ItemDetail)
+	items.Post("/", handlers.ItemCreate)
 
 	// // Setup static files
 	// app.Static("/", "./static/public")
