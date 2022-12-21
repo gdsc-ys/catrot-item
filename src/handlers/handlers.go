@@ -2,18 +2,30 @@ package handlers
 
 import (
 	"src/database"
+	"src/models"
+
 	"github.com/gofiber/fiber/v2"
 	// "github.com/gofiber/fiber/v2/utils"
 )
 
 func ItemList(c *fiber.Ctx) error {
-	// var items []database.Item
-	var item database.Item
+	var items []models.Item
 	db := database.DB
-	db.First(&item)
+	db.Find(&items)
 	return c.JSON(fiber.Map{
 		"success":true,
-		"itmes": item,
+		"itmes": items,
+	})
+}
+
+func ItemDetail(c *fiber.Ctx) error {
+	var item models.Item
+	itemId := c.Params("itemId")
+	db := database.DB
+	db.First(&item, itemId)
+	return c.JSON(fiber.Map{
+		"success":true,
+		"item": item,
 	})
 }
 

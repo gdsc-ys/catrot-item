@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"src/database"
 	"src/handlers"
 
 	"flag"
 	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -37,6 +39,7 @@ func main() {
 
 	items := app.Group("/items")
 	items.Get("/", handlers.ItemList)
+	items.Get("/:itemId", )
 
 	// // Setup static files
 	// app.Static("/", "./static/public")
