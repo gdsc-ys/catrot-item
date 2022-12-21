@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"src/database"
 	"src/handlers"
 
