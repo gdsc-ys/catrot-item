@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"src/database"
 	"src/models"
@@ -35,8 +36,23 @@ func ItemCreate(c *fiber.Ctx) error {
 		return err
 	}
 	log.Println(item.Title)
-	log.Println(item.Content)
-	return c.Send(c.Body())
+	log.Println(item.Category)
+
+	if form, err := c.MultipartForm(); err == nil {
+		files := form.File["img"]
+
+		for _, file := range files {
+			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
+
+			if err := c.SaveFile(file, fmt.Sprintf("./%s", file.Filename)); err != nil {
+				return err
+			}
+		}
+		return err
+	}
+	return c.Status(200).JSON(fiber.Map{
+		"success" : true,
+	})
 }
 
 // NotFound returns custom 404 page
