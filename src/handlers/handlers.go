@@ -14,8 +14,8 @@ func ItemList(c *fiber.Ctx) error {
 	db := database.DB
 	db.Find(&items)
 	return c.JSON(fiber.Map{
-		"success":true,
-		"itmes": items,
+		"success": true,
+		"itmes":   items,
 	})
 }
 
@@ -25,8 +25,8 @@ func ItemDetail(c *fiber.Ctx) error {
 	db := database.DB
 	db.First(&item, itemId)
 	return c.JSON(fiber.Map{
-		"success":true,
-		"item": item,
+		"success": true,
+		"item":    item,
 	})
 }
 
@@ -35,7 +35,9 @@ func ItemCreate(c *fiber.Ctx) error {
 	if err := c.BodyParser(item); err != nil {
 		return err
 	}
-
+	log.Println("item 정보", item.Category, item.Content, item.Price, item.Title)
+	db := database.DB
+	db.Create(&item)
 	if form, err := c.MultipartForm(); err == nil {
 		files := form.File["img"]
 
@@ -48,11 +50,9 @@ func ItemCreate(c *fiber.Ctx) error {
 		}
 		return err
 	}
-	db := database.DB
-	db.Create(&item)
 
 	return c.Status(200).JSON(fiber.Map{
-		"success" : true,
+		"success": true,
 	})
 }
 
@@ -60,4 +60,3 @@ func ItemCreate(c *fiber.Ctx) error {
 func NotFound(c *fiber.Ctx) error {
 	return c.Status(404).SendFile("./static/private/404.html")
 }
-
