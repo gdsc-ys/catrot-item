@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"log"
 	"src/database"
 	"src/models"
 
@@ -12,8 +14,8 @@ func ItemList(c *fiber.Ctx) error {
 	db := database.DB
 	db.Find(&items)
 	return c.JSON(fiber.Map{
-		"success":true,
-		"itmes": items,
+		"success": true,
+		"itmes":   items,
 	})
 }
 
@@ -23,8 +25,34 @@ func ItemDetail(c *fiber.Ctx) error {
 	db := database.DB
 	db.First(&item, itemId)
 	return c.JSON(fiber.Map{
-		"success":true,
-		"item": item,
+		"success": true,
+		"item":    item,
+	})
+}
+
+func ItemCreate(c *fiber.Ctx) error {
+	item := new(models.Item)
+	if err := c.BodyParser(item); err != nil {
+		return err
+	}
+	log.Println("item 정보", item.Category, item.Content, item.Price, item.Title)
+	db := database.DB
+	db.Create(&item)
+	if form, err := c.MultipartForm(); err == nil {
+		files := form.File["img"]
+
+		for _, file := range files {
+			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
+
+			if err := c.SaveFile(file, fmt.Sprintf("./media/%s", file.Filename)); err != nil {
+				return err
+			}
+		}
+		return err
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"success": true,
 	})
 }
 
