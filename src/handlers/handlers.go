@@ -35,8 +35,6 @@ func ItemCreate(c *fiber.Ctx) error {
 	if err := c.BodyParser(item); err != nil {
 		return err
 	}
-	log.Println(item.Title)
-	log.Println(item.Category)
 
 	if form, err := c.MultipartForm(); err == nil {
 		files := form.File["img"]
@@ -44,12 +42,15 @@ func ItemCreate(c *fiber.Ctx) error {
 		for _, file := range files {
 			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 
-			if err := c.SaveFile(file, fmt.Sprintf("./%s", file.Filename)); err != nil {
+			if err := c.SaveFile(file, fmt.Sprintf("./media/%s", file.Filename)); err != nil {
 				return err
 			}
 		}
 		return err
 	}
+	db := database.DB
+	db.Create(&item)
+
 	return c.Status(200).JSON(fiber.Map{
 		"success" : true,
 	})
@@ -59,3 +60,4 @@ func ItemCreate(c *fiber.Ctx) error {
 func NotFound(c *fiber.Ctx) error {
 	return c.Status(404).SendFile("./static/private/404.html")
 }
+
