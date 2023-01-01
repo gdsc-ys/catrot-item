@@ -24,9 +24,6 @@ func main() {
 	// Connected with database
 	database.Init()
 
-
-
-
 	// Create fiber app
 	app := fiber.New(fiber.Config{
 		Prefork: *prod, // go run app.go -prod
@@ -42,7 +39,6 @@ func main() {
 	items.Post("/", handlers.ItemCreate)
 
 	// // Setup static files
-	// app.Static("/", "./static/public")
 
 	// Handle not founds
 	app.Use(handlers.NotFound)

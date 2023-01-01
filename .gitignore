@@ -80,4 +80,6 @@ Temporary Items
 .vscode/launch.json
 
 media/
-
+dist/
+out/
+.env
