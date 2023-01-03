@@ -3,10 +3,15 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"context"
 	"src/database"
 	"src/models"
-
+	"flag"
+	"time"
 	"github.com/gofiber/fiber/v2"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	pb "src/proto"
 )
 
 func ItemList(c *fiber.Ctx) error {
@@ -53,6 +58,31 @@ func ItemCreate(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(fiber.Map{
 		"success": true,
+	})
+}
+
+var (
+	addr = flag.String("addr", "54.180.211.115:50051", "the address to connect to")
+)
+
+func protoTest(c *fiber.Ctx) error {
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewFunctionsClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	id := c.Params("id")
+	r, err := client.GetInfo(ctx, &pb.UserRequest{Id: *id})
+
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	return c.Status(200).JSON(fiber.Map{
+		"success": true,
+		"response": r,
 	})
 }
 
