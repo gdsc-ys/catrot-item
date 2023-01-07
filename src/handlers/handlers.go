@@ -14,6 +14,10 @@ import (
 	pb "src/proto"
 )
 
+var (
+	addr = flag.String("addr", "54.180.211.115:50051", "the address to connect to")
+)
+
 func ItemList(c *fiber.Ctx) error {
 	var items []models.Item
 	db := database.DB
@@ -29,9 +33,28 @@ func ItemDetail(c *fiber.Ctx) error {
 	itemId := c.Params("itemId")
 	db := database.DB
 	db.First(&item, itemId)
+
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewFunctionsClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	id := int32(item.UserID + 1)  
+	// id := int32(1)
+	r, err := client.GetInfo(ctx, &pb.UserRequest{Id: id})
+
+	fmt.Printf("item %T", item)	
+
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
 	return c.JSON(fiber.Map{
 		"success": true,
 		"item":    item,
+		"user":	r,
 	})
 }
 
@@ -61,11 +84,9 @@ func ItemCreate(c *fiber.Ctx) error {
 	})
 }
 
-var (
-	addr = flag.String("addr", "54.180.211.115:50051", "the address to connect to")
-)
 
-func protoTest(c *fiber.Ctx) error {
+
+func ProtoTest(c *fiber.Ctx) error {
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -74,8 +95,8 @@ func protoTest(c *fiber.Ctx) error {
 	client := pb.NewFunctionsClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	id := c.Params("id")
-	r, err := client.GetInfo(ctx, &pb.UserRequest{Id: *id})
+	id := 1 
+	r, err := client.GetInfo(ctx, &pb.UserRequest{Id: int32(id) })
 
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
