@@ -38,6 +38,7 @@ func main() {
 	items.Get("/:itemId", handlers.ItemDetail)
 	items.Post("/", handlers.ItemCreate)
 
+
 	// // Setup static files
 
 	// Handle not founds
