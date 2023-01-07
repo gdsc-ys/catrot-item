@@ -42,7 +42,7 @@ func ItemDetail(c *fiber.Ctx) error {
 	client := pb.NewFunctionsClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	id := int32(item.UserID + 1)  
+	id := int32(item.UserID)  
 	// id := int32(1)
 	r, err := client.GetInfo(ctx, &pb.UserRequest{Id: id})
 
